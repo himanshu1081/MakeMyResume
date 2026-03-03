@@ -1,0 +1,132 @@
+You are a professional technical resume writer and LaTeX formatter.
+
+You will be given:
+
+OLD RESUME (source of truth)
+
+JOB DESCRIPTION
+
+Your task:
+
+Extract facts ONLY from OLD RESUME.
+
+Do NOT fabricate metrics, numbers, tools, or achievements.
+
+Do NOT add technologies not already listed.
+
+Tailor bullet wording to match JOB DESCRIPTION keywords.
+
+Keep bullets concise and impact-driven.
+
+Limit to 3–4 bullets per role.
+
+Keep each bullet ideally one line.
+
+Avoid fluff, repetition, or generic statements.
+
+Maintain chronological order.
+
+Resume must strictly fit ONE PAGE.
+
+Keep spacing compact and dense.
+
+Formatting Requirements:
+
+Use 10pt article class.
+
+Margin = 0.5in.
+
+Use only: geometry, titlesec, enumitem, hyperref.
+
+No additional packages.
+
+No comments.
+
+No markdown.
+
+No explanations.
+
+Output ONLY valid LaTeX code.
+
+No unusual spacing commands.
+
+No manual vertical spacing.
+
+No empty lines between sections.
+
+Use tight item spacing.
+
+try to use full page.
+
+Keep header minimal and centered. Rest should be left align
+
+Structure (must follow exactly):
+
+Header:
+Large bold name centered
+Contact line with phone | email | LinkedIn | GitHub
+
+Sections in this order:
+Experience
+Projects
+Technical Skills
+Education
+
+Bullet format:
+\begin{itemize}
+\item ...
+\end{itemize}
+
+Technical Skills format:
+Category bold label followed by comma-separated skills on same line.
+
+old resume:
+Himanshu Chaudhary\nFull Stack Developer\n+91 6398776703 — himanshuatwork02@gmail.com — Linkedin — Github\nExperience\nJunior Full Stack Developer (AI Implementation) Aug 2025 – Present\nMindmesh Consulting Ltd (UK-based Agency)\n• Assisted in implementing AI-powered chatbot solutions for client websites under senior developer guidance.\n• Integrated LLM APIs into existing web applications to enable automated customer query handling.\n• Developed backend routes and frontend UI components for chatbot interaction workflows.\n• Tested, debugged, and deployed chatbot features across multiple client projects.\nFreelance Frontend Developer Feb 2026 – Present\nBalkan Cleaning - Live\n• Developed and deployed a production business website for a UK-based client.\n• Built responsive UI using Vite + React and handled full deployment lifecycle.\nFull Stack Developer Intern (Frontend-Focused) Jun 2025 – Jul 2025\nInnovation House Technology Private Limited\n• Built MERN stack features with primary focus on React-based frontend development.\n• Integrated frontend with REST APIs using Node.js and Express.\nProjects\nVexa – AI Chat Application (Gen AI) Nov 2025 – Present\nTech Stack: Next.js, Supabase, OpenAI API\nLive — GitHub\n• Built an AI-powered chat application with real-time responses.\n• Implemented infinite scrolling for chat history, optimizing message fetching and reducing redundant database reads.\n• Integrated Supabase for authentication and persistent chat storage.\nVastora – YouTube-like Video Streaming Platform Jun 2025 – Aug 2025\nTech Stack: MERN Stack (MongoDB, Express.js, React.js, Node.js), JWT\nLive — GitHub\n• Developed a full-stack video streaming platform with authentication and protected routes using JWT.\n• Optimized data retrieval using MongoDB aggregation pipelines.\nTechnical Skills\nFrontend: React.js, Next.js, JavaScript, TypeScript, HTML5, CSS3, Tailwind CSS\nBackend: Node.js, Express.js, REST APIs\nAI & APIs: OpenAI API, LLM Integration, Chatbot Architecture\nDatabases: MongoDB, MySQL, PostgreSQL, Supabase\nDevOps & Tools: Linux(Basics), Git, CI/CD Fundamentals, Vercel, AWS (Basics)\nEducation\nBachelor of Computer Applications (BCA) 2023 – 2026\nJaypee Institute of Information Technology, Noida Sector 62, Uttar Pradesh\n\n-- 1 of 1 --\n\n
+
+job description:
+As the global leader in AI-powered, high-performance recruitment marketing, Joveo is transforming talent attraction and recruitment media buying for the world’s largest employers, staffing firms, RPOs, and media agencies. The Joveo platform enables businesses to attract, source, engage, and hire the best candidates on time and within budget.
+Backed by marquee investors like Nexus Ventures Partners, Joveo has been featured in Inc. Magazine’s List of America’s Fastest-Growing Private Companies for three years.
+Powering millions of jobs every day, Joveo’s data-driven recruitment marketing platform uses advanced data science and machine learning to dynamically manage and optimize talent sourcing and applications across all online channels while providing real-time insights at every step of the job seeker journey, from click to hire.
+
+
+For more information about Joveo’s award-winning platform, visit www.joveo.com
+
+
+
+Role Overview:
+
+As a Frontend Intern at Joveo, you'll be an integral part of our engineering team, working on projects that directly impact our user experience. You'll have the opportunity to learn from experienced developers, contribute to real-world projects, and gain hands-on experience with modern frontend technologies.
+
+
+Responsibilities: 
+
+Collaborate with designers and backend engineers to build user-friendly and responsive web interfaces.
+Develop and maintain clean, well-structured, and efficient frontend code.
+Troubleshoot and fix bugs to ensure optimal application performance.
+Stay up-to-date with the latest frontend technologies and trends.
+Contribute to the development of new features and improvements to existing features.
+
+
+Requirements: 
+
+Bachelor's degree in computer science, computer engineering, or a related technical field.
+Strong understanding of HTML, CSS, and JavaScript.
+Proficiency in at least one popular frontend framework (React, Angular, or Vue.js ).
+Familiarity with modern JavaScript concepts (ES6+, TypeScript).
+Experience with version control systems (Git).
+Basic understanding of frontend development concepts, such as responsive design, accessibility, and performance optimization.
+Strong problem-solving skills and a willingness to learn and adapt in a fast-paced environment.
+Ability to work collaboratively in a team-oriented setting.
+
+
+What We Offer:
+
+Hands-on experience working on real projects alongside experienced professionals.
+Mentorship and guidance to help you grow your technical skills and knowledge.
+A dynamic and supportive work environment with opportunities to learn and explore new technologies.
+A potential path to full-time employment upon successful completion of the internship.
+
+
+Joveo is committed to creating a diverse and inclusive work environment. As an equal-opportunity employer, we encourage applications from all qualified individuals. For more information about our company, visit www.joveo.com.
+Goal:
+Produce a compact, clean, ATS-optimized, professional one-page resume with minimal white space using the provided LaTeX structure.

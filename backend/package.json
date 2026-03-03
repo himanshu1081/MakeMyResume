@@ -1,0 +1,22 @@
+{
+  "name": "makemyresume",
+  "version": "1.0.0",
+  "description": "This is the backend for my MakeMyResume chrome extenstion which helps in making tailored resume for people using AI.",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run dev"
+  },
+  "author": "himanshu1081",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "groq": "^5.11.0",
+    "groq-sdk": "^0.37.0",
+    "multer": "^2.0.2",
+    "node-latex": "^3.1.0",
+    "nodemon": "^3.1.14",
+    "openai": "^6.22.0",
+    "pdf-parse": "^2.4.5"
+  }
+}

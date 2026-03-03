@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "express": "^5.2.1",
+    "groq-sdk": "^0.37.0",
+    "pdf-parse": "^2.4.5",
+    "pdf-text-extract": "^1.5.0"
+  },
+  "name": "makemyresume",
+  "version": "1.0.0",
+  "main": "jd.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
