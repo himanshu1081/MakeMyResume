@@ -1,14 +1,26 @@
 import express from "express"
-import OpenAI from "openai";
 import multer from "multer";
 import dotenv from "dotenv"
 import { PDFParse } from 'pdf-parse';
 import fs from "fs"
 import { Groq } from 'groq-sdk';
+import { exec } from "child_process";
+import { promisify } from "util";
 dotenv.config()
 
+const execAsync = promisify(exec)
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
+if (!fs.existsSync("temp")) {
+    fs.mkdirSync("temp");
+}
+
+async function getPDF(latex) {
+    const id = Date.now();
+    fs.writeFileSync(`temp/resume-${id}.tex`, latex)
+    await execAsync(`pdflatex -interaction=nonstopmode -output-directory=temp temp/resume-${id}.tex`)
+    return id
+}
 
 async function getLatex(oldResume, jobdescription) {
     const chatCompletion = await groq.chat.completions.create({
@@ -60,6 +72,10 @@ const port = 3000
 
 app.use(express.urlencoded({ extended: false }))
 
+if (!fs.existsSync("uploads")) {
+    fs.mkdirSync("uploads");
+}
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads/')
@@ -82,9 +98,18 @@ app.post('/getresume', upload.single("oldResume"), async (req, res) => {
 
         const oldResume = await parser.getText();
         await parser.destroy();
-        const latex = getLatex(oldResume.text,req.body.jobdescription)
+        const latex = await getLatex(oldResume.text, req.body.jobdescription)
         fs.unlinkSync(filepath)
-        buildPDF(latex)
+        const { id } = await getPDF(latex);
+
+        res.download(`temp/resume-${id}.pdf`, (err) => {
+            if (!err) {
+                fs.unlinkSync(`temp/resume-${id}.pdf`);
+                fs.unlinkSync(`temp/resume-${id}.tex`);
+                fs.unlinkSync(`temp/resume-${id}.aux`);
+                fs.unlinkSync(`temp/resume-${id}.log`);
+            }
+        });
 
     } catch (error) {
         console.error(error);
