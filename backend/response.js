@@ -120,6 +120,10 @@ app.post('/getresume', upload.single("oldResume"), async (req, res) => {
     }
 })
 
+app.get('/cronJob',(req,res)=>{
+    res.sendStatus(200);
+})
+
 app.listen(port, () => {
     console.log(`App listening on port ${port}`)
 })
