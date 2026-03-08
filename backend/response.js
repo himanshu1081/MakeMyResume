@@ -69,7 +69,7 @@ ${oldResume}`
 }
 
 const app = express()
-const port = 3000
+const port = process.env.PORT || 3000
 
 app.use(express.urlencoded({ extended: false }))
 
@@ -98,8 +98,10 @@ app.post('/getresume', upload.single("oldResume"), async (req, res) => {
         const parser = new PDFParse({ data: buffer });
 
         const oldResume = await parser.getText();
+        console.log("old resume fetched")
         await parser.destroy();
         const latex = await getLatex(oldResume.text, req.body.jobdescription)
+        console.log("latex code recevied from grok")
         fs.unlinkSync(filepath)
         const { id } = await getPDF(latex);
 
