@@ -19,7 +19,8 @@ async function getPDF(latex) {
     const id = Date.now();
     fs.writeFileSync(`temp/resume-${id}.tex`, latex)
     await execAsync(`pdflatex -interaction=nonstopmode -output-directory=temp temp/resume-${id}.tex`)
-    return id
+    console.log("file gone")
+    return {id}
 }
 
 async function getLatex(oldResume, jobdescription) {
