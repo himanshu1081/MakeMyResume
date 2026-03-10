@@ -5,9 +5,15 @@ import { PDFParse } from 'pdf-parse';
 import fs from "fs"
 import { Groq } from 'groq-sdk';
 import { exec } from "child_process";
+import cors from "cors"
 import { promisify } from "util";
 dotenv.config()
 
+app.use(cors(
+    {
+        origin:["chrome-extension://fagohgjmefkeimffbdneigebbjkbppcp"]
+    }
+))
 const execAsync = promisify(exec)
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 

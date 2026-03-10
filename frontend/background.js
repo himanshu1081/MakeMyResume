@@ -5,7 +5,7 @@ chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: "generateResume",
         title: "Generate Resume",
-        contexts: ["all"]
+        contexts: ["selection"]
     })
 })
 
@@ -20,27 +20,38 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action == "uploadPDF") {
-        file = request.pdf
+
+    if (request.action === "uploadPDF") {
+        file = request.pdf;
     }
-    if (request.action == "generateResume") {
-        getResume()
-    }
+
     if (request.action === "getJD") {
         sendResponse({ jobDescription });
     }
-})
 
-async function getResume() {
-    if (!jobDescription || !file) {
-        console.log("Missing job description or resume file");
-        return;
+    if (request.action === "generateResume") {
+
+        if (!jobDescription || !file) {
+            console.log("Missing job description or resume file");
+            sendResponse({ button: false });
+            return;
+        }
+
+        getResume(sendResponse);
+        return true; // keeps channel open
     }
-    const formData = new FormData();
 
-    formData.append("jobdescription", jobDescription)
-    formData.append("oldResume", file)
+});
+
+async function getResume(sendResponse) {
+
+    const formData = new FormData();
+    formData.append("jobdescription", jobDescription);
+    formData.append("oldResume", file);
+    sendResponse({ button: true });
+
     try {
+
         await fetch("https://makemyresume.onrender.com/getresume", {
             method: "POST",
             body: formData
@@ -48,7 +59,13 @@ async function getResume() {
 
         jobDescription = null;
         file = null;
+
+
     } catch (error) {
-        console.error(error.message)
+
+        console.error(error.message);
+        sendResponse(false);
+
     }
-}   
+
+}

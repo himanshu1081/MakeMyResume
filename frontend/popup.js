@@ -7,9 +7,25 @@ document.addEventListener("DOMContentLoaded", () => {
   generateBtn.addEventListener("click", () => {
     chrome.runtime.sendMessage({
       action: "generateResume"
+    }, (response) => {
+      if (response.button) {
+        let warning = document.getElementById("warning");
+        if(warning){
+          warning.remove()
+        }
+        generateBtn.innerText = "Generating..."
+        generateBtn.style.opacity=0.9
+      } else {
+        let warning = document.getElementById("warning");
+        if (!warning) {
+          warning = document.createElement("p");
+          warning.id = "warning";
+          warning.innerText = "Something went wrong";
+          warning.style.color = "red"
+          generateBtn.before(warning)
+        }
+      }
     });
-    generateBtn.innerText = "Generating..."
-
   });
 
   chrome.runtime.sendMessage(

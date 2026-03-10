@@ -2,15 +2,12 @@
   "manifest_version": 3,
   "name": "MakeMyResume",
   "version": "1.0",
-
   "action": {
     "default_popup": "popup.html"
   },
-
   "background": {
     "service_worker": "background.js"
   },
-
   "content_scripts": [
     {
       "matches": [
@@ -21,9 +18,11 @@
       ]
     }
   ],
-
   "permissions": [
     "tabs",
     "contextMenus"
+  ],
+  "host_permissions": [
+    "https://makemyresume.onrender.com/*"
   ]
 }
