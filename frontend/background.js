@@ -72,10 +72,7 @@ async function getResume(sendResponse) {
 
 
     } catch (error) {
-
-        console.error(error.message);
         sendResponse(false);
-
     }
 
 }
