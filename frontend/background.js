@@ -1,3 +1,5 @@
+import { createElement } from "react";
+
 let jobDescription = null;
 let file = null;
 
@@ -52,10 +54,20 @@ async function getResume(sendResponse) {
 
     try {
 
-        await fetch("https://makemyresume.onrender.com/getresume", {
+        const response = await fetch("https://makemyresume.onrender.com/getresume", {
             method: "POST",
             body: formData
         });
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob)
+
+        const a = document.createElement("a")
+        a.href = url;
+        a.download = "generated-resume.pdf"
+        a.click()
+        URL.revokeObjectURL(url)
+
 
         jobDescription = null;
         file = null;
