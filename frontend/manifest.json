@@ -1,19 +1,29 @@
 {
-    "manifest_version": 3,
-    "name": "MakeMyResume",
-    "version": "1.0",
-    "action": {
-        "default_popup": "popup.html"
-    },
-    "content_scripts": [
-        {
-            "matches": [
-                "https://www.linkedin.com/*"
-            ],
-            "js": [
-                "content.js"
-            ]
-        }
-    ],
-    "permissions":["tabs","contextMenus"]
+  "manifest_version": 3,
+  "name": "MakeMyResume",
+  "version": "1.0",
+
+  "action": {
+    "default_popup": "popup.html"
+  },
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.linkedin.com/*"
+      ],
+      "js": [
+        "content.js"
+      ]
+    }
+  ],
+
+  "permissions": [
+    "tabs",
+    "contextMenus"
+  ]
 }
