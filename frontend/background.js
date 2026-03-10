@@ -1,5 +1,3 @@
-import { createElement } from "react";
-
 let jobDescription = null;
 let file = null;
 

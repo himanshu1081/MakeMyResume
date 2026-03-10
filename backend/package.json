@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "This is the backend for my MakeMyResume chrome extenstion which helps in making tailored resume for people using AI.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "npm run dev"
   },

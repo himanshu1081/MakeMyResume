@@ -5,15 +5,11 @@ import { PDFParse } from 'pdf-parse';
 import fs from "fs"
 import { Groq } from 'groq-sdk';
 import { exec } from "child_process";
-import cors from "cors"
 import { promisify } from "util";
+import cors from "cors"
 dotenv.config()
 
-app.use(cors(
-    {
-        origin:["chrome-extension://fagohgjmefkeimffbdneigebbjkbppcp"]
-    }
-))
+
 const execAsync = promisify(exec)
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -26,7 +22,7 @@ async function getPDF(latex) {
     fs.writeFileSync(`temp/resume-${id}.tex`, latex)
     await execAsync(`pdflatex -interaction=nonstopmode -output-directory=temp temp/resume-${id}.tex`)
     console.log("file created")
-    return {id}
+    return { id }
 }
 
 async function getLatex(oldResume, jobdescription) {
@@ -76,7 +72,10 @@ ${oldResume}`
 
 const app = express()
 const port = process.env.PORT || 3000
-
+app.use(cors({
+    origin: ["chrome-extension://fagohgjmefkeimffbdneigebbjkbppcp"]
+}
+))
 app.use(express.urlencoded({ extended: false }))
 
 if (!fs.existsSync("uploads")) {
@@ -126,7 +125,7 @@ app.post('/getresume', upload.single("oldResume"), async (req, res) => {
     }
 })
 
-app.get('/cronJob',(req,res)=>{
+app.get('/cronJob', (req, res) => {
     res.sendStatus(200);
 })
 
