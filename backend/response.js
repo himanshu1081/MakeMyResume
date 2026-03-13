@@ -25,6 +25,26 @@ async function getPDF(latex) {
     return { id }
 }
 
+async function importantPoints(jobdescription) {
+    const chatCompletion = await groq.chat.completions.create({
+        model: "groq/compound",
+        temperature: 0.2,
+        max_completion_tokens: 1200,
+        messages: [
+            {
+                role: "system",
+                content: `You are given a jobdescription from linkedIn. You have to find revevant key points from the jd and return important parts from it which will later be given to an api for better resume building via latex code.`
+            },
+            {
+                role: "user",
+                content: `JOB DESCRIPTION: ${jobdescription}`
+            }
+        ]
+    });
+
+    return chatCompletion.choices[0].message.content;
+}
+
 async function getLatex(oldResume, jobdescription) {
     const chatCompletion = await groq.chat.completions.create({
         model: "groq/compound",
@@ -105,7 +125,10 @@ app.post('/getresume', upload.single("oldResume"), async (req, res) => {
         const oldResume = await parser.getText();
         console.log("old resume fetched")
         await parser.destroy();
-        const latex = await getLatex(oldResume.text, req.body.jobdescription)
+
+        //getting important points from the jd.
+        const important_points = await importantPoints(req.body.jobdescription)
+        const latex = await getLatex(oldResume.text, important_points)
         console.log("latex code recevied from grok")
         fs.unlinkSync(filepath)
         const { id } = await getPDF(latex);

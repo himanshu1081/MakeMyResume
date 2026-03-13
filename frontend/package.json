@@ -1,9 +1,11 @@
 {
   "dependencies": {
+    "@tailwindcss/cli": "^4.2.1",
     "express": "^5.2.1",
     "groq-sdk": "^0.37.0",
     "pdf-parse": "^2.4.5",
-    "pdf-text-extract": "^1.5.0"
+    "pdf-text-extract": "^1.5.0",
+    "tailwindcss": "^4.2.1"
   },
   "name": "makemyresume",
   "version": "1.0.0",

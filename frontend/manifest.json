@@ -20,7 +20,8 @@
   ],
   "permissions": [
     "tabs",
-    "contextMenus"
+    "contextMenus",
+    "downloads"
   ],
   "host_permissions": [
     "https://makemyresume.onrender.com/*"
