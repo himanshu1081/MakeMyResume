@@ -3,24 +3,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const generateBtn = document.getElementById("generateBtn");
   const pdfinput = document.getElementById("pdfinput");
+  const pdfinputui = document.getElementById("pdfInputUi")
   const jdinput = document.getElementById("jdInput");
-  const resumeText = document.getElementById("resumeText")
+  let resumeText = document.getElementById("resumeText")
+  let warning = document.getElementById("warning")
+  let linkedinUrl = document.getElementById("linkedinurl")
+  let githubUrl = document.getElementById("githuburl")
+  let links = document.querySelectorAll("#linkedinurl", "#githuburl")
+
+  linkedinUrl.addEventListener("change", () => {
+    localStorage.setItem("linkedinUrl", linkedinUrl.value)
+  })
 
 
-  resumeText.addEventListener("click", () => {
+  githubUrl.addEventListener("change", () => {
+    localStorage.setItem("githubUrl", githubUrl.value)
+  })
+
+  pdfinputui.addEventListener("click", () => {
     pdfinput.click()
   })
 
-  let file = localStorage?.getItem("oldResume") || null;
+
+  let file = getfile() || null;
   if (file) {
     resumeText.innerHTML = "<div>Click here to upload new file</div>"
   }
 
-
+  linkedinUrl.value = localStorage.getItem("linkedinUrl") || "";
+  githubUrl.value = localStorage.getItem("githubUrl") || "";
 
   generateBtn.addEventListener("click", () => {
-    if (!jdinput || !file) {
-      let warning = document.getElementById("warning")
+    if (!jdinput.value || !file) {
       if (!warning) {
         warning = document.createElement("div")
         warning.style.color = "red"
@@ -47,21 +61,64 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   );
 
-  pdfinput.addEventListener("change", (e) => {
-    const reader = new FileReader()
-    file = e.target.files[0];
-    reader.onload = () => {
-      localStorage.setItem("oldResume", reader.result)
-      resumeText.innerHTML = "<div>Click here to upload new file</div>"
+  function savefile(file) {
+    const request = indexedDB.open("resumeDB", 1);
+
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result
+      db.createObjectStore("files", { keyPath: "id" })
     }
-    reader.readAsDataURL(file)
+
+    request.onsuccess = (event) => {
+
+      const db = event.target.result
+
+      const tx = db.transaction("files", "readwrite")
+
+      const store = tx.objectStore("files");
+
+      store.put({
+        id: "oldresume",
+        file: file
+      })
+    }
+  }
+
+  function getfile() {
+    const request = indexedDB.open("resumeDB", 1);
+
+    request.onsuccess = (event) => {
+
+      const db = event.target.result;
+
+      const tx = db.transaction("files", "readonly");
+
+      const store = tx.objectStore("files");
+
+      const getRequest = store.get("oldresume");
+
+      getRequest.onsuccess = () => {
+        const data = getRequest.result;
+        let file = null
+        if (data) {
+          file = data.file;
+        }
+        return file;
+      }
+    }
+  }
+
+  pdfinput.addEventListener("change", (e) => {
+    file = e.target.files[0];
+    resumeText.innerText = "File Uploaded!"
+    savefile(file)
   });
 
 });
 
 async function getResume(jdinput, file) {
 
-  if (!file.value) {
+  if (!file) {
     console.log("No resume uploaded");
     return;
   }
@@ -69,7 +126,12 @@ async function getResume(jdinput, file) {
   const formData = new FormData();
   formData.append("jobdescription", jdinput.value);
   formData.append("oldResume", file);
-
+  if (linkedinUrl.value !== "")
+    formData.append("linkedinUrl", linkedinUrl.value
+    )
+  if (githubUrl.value !== "")
+    formData.append("githubUrl", githubUrl.value
+    )
   try {
 
     const response = await fetch(
@@ -82,6 +144,8 @@ async function getResume(jdinput, file) {
 
     if (!response.ok) {
       const err = await response.text();
+      generateBtn.innerText = "Generate resume"
+      warning.innerText = "Something went wrong."
       console.error(err);
       return;
     }
@@ -100,6 +164,7 @@ async function getResume(jdinput, file) {
     reader.readAsDataURL(blob);
     generateBtn.innerText = "Generate resume"
   } catch (error) {
+    generateBtn.innerText = "Generate resume"
     console.error(error);
   }
 

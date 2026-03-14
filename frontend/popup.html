@@ -9,18 +9,18 @@
   <title>MakeMyResume</title>
 </head>
 
-<body class="w-[350px] p-3 box-border font-sans bg-white">
+<body class="w-[350px] p-3 box-border font-sans bg-black/90 text-white">
 
   <div class="mb-3">
-    <h2 class="text-lg font-semibold">MakeMyResume</h2>
-    <h6 class="text-xs text-gray-500">By Himanshu Chaudhary</h6>
+    <h2 class="text-lg font-semibold text-center w-full">MakeMyResume</h2>
+    <h6 class="text-xs text-gray-500  text-center w-full">By Himanshu Chaudhary</h6>
   </div>
 
   <p class="text-sm mb-2">Upload your old resume here.</p>
 
   <div>
-    <input type="file" id="pdfinput" accept="application/pdf"  style="display:none">
-    <div id="pdfInputUi" class="flex flex-col gap-2 w-full h-20 bg-amber-300">
+    <input type="file" id="pdfinput" accept="application/pdf" style="display:none">
+    <div id="pdfInputUi" class="flex flex-col gap-2 w-full h-20 items-center justify-center rounded-md bg-white/20 hover:cursor-pointer">
       <span class="material-symbols-outlined">
         upload_file
       </span>
@@ -30,11 +30,24 @@
     </div>
   </div>
   <textarea id="jdInput" placeholder="Paste Job Description here..."
-    class="w-full h-[150px] mt-3 p-2 text-sm border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-black">
+    class="w-full h-[150px] text-white mt-3 p-2 text-sm border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-black outline-0 ">
   </textarea>
-
+  <div class="flex flex-col">
+    <div class="flex gap-2 flex-col rounded-2xl">
+      <span>
+        LinkedIn Url (optional)
+      </span>
+      <input type="text" class="border h-7 w-full rounded-sm text-white outline-0 p-2" id="linkedinurl">
+    </div>
+    <div class="flex gap-2 flex-col">
+      <span>
+        Github Url (optional)
+      </span>
+      <input type="text" class="border h-7 w-full rounded-sm text-white outline-0 p-2" id="githuburl">
+    </div>
+  </div>
   <button id="generateBtn"
-    class="w-full mt-3 py-2 bg-black text-white rounded-md font-semibold hover:opacity-90 transition cursor-pointer">
+    class="w-full mt-3 py-2 bg-white text-black rounded-md font-semibold hover:opacity-70 transition cursor-pointer">
     Generate Resume
   </button>
 

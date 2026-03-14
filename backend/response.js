@@ -45,7 +45,7 @@ async function importantPoints(jobdescription) {
     return chatCompletion.choices[0].message.content;
 }
 
-async function getLatex(oldResume, jobdescription) {
+async function getLatex(oldResume, jobdescription,linkedInUrl="",githubUrl="") {
     const chatCompletion = await groq.chat.completions.create({
         model: "groq/compound",
         temperature: 0.2,
@@ -56,8 +56,11 @@ async function getLatex(oldResume, jobdescription) {
                 content: `You are a professional technical resume writer and LaTeX formatter.
 
 Extract facts ONLY from OLD RESUME.
+Escape all LaTeX special characters if present in the job description.
+Rewrite bullet points to align with job description keywords while preserving original meaning.
 Do NOT fabricate information.
 Tailor wording to match JOB DESCRIPTION keywords.
+links for the github and linkedin is given as well,if not provided then dont add it to the resume.
 Keep resume strictly one page.
 Output ONLY valid LaTeX.
 No markdown.
@@ -73,12 +76,121 @@ Header
 Experience
 Projects
 Technical Skills
-Education`
+Education
+Use the format for the resume given below.
+Format:
+\\documentclass[10pt, letterpaper]{article}
+\\usepackage[utf8]{inputenc}
+\\usepackage[margin=0.5in]{geometry}
+\\usepackage{titlesec}
+\\usepackage{enumitem}
+\\usepackage[hidelinks]{hyperref}
+\\usepackage{xcolor}
+
+% Formatting
+\titleformat{\section}{\large\bfseries}{}{0pt}{}[\titlerule]
+\titlespacing{\section}{0pt}{12pt}{6pt}
+\setlist[itemize]{itemsep=3pt, topsep=4pt, leftmargin=*}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\pagestyle{empty}
+\\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks=true,
+    urlcolor=blue,
+    linkcolor=blue
+}
+\begin{document}
+
+% Header
+\begin{center}
+    {\huge \textbf{Himanshu Chaudhary}} \\
+    \vspace{6pt}
+    Full Stack Developer \\
+    \vspace{6pt}
+   \href{tel:+916398776703}{+91 6398776703} \textbar\ 
+\href{mailto:himanshuatwork02@gmail.com}{himanshuatwork02@gmail.com} \textbar\ 
+\href{https://www.linkedin.com/in/himanshu1081/}{LinkedIn} \textbar\ 
+\href{https://github.com/himanshu1081}{GitHub}
+\end{center}
+
+% Experience
+\section*{Experience}
+
+\textbf{Junior Full Stack Developer (AI Implementation)} \hfill Aug 2025 -- Present \\
+Mindmesh Consulting Ltd (UK-based Agency)
+\begin{itemize}
+    \item Assisted in implementing AI-powered chatbot solutions for client websites under senior developer guidance.
+    \item Integrated LLM APIs into existing web applications to enable automated customer query handling.
+    \item Developed backend routes and frontend UI components for chatbot interaction workflows.
+    \item Tested, debugged, and deployed chatbot features across multiple client projects.
+\end{itemize}
+
+\textbf{Freelance Frontend Developer} \hfill Feb 2026 -- Present \\
+Balkan Cleaning - \href{https://www.balkancleaning.co.uk/}{Live}
+\begin{itemize}
+    \item Developed and deployed a production business website for a UK-based client.
+    \item Built responsive UI using Vite + React and handled full deployment lifecycle.
+\end{itemize}
+
+
+\textbf{Full Stack Developer Intern (Frontend-Focused)} \hfill Jun 2025 -- Jul 2025 \\
+Innovation House Technology Private Limited
+\begin{itemize}
+    \item Built MERN stack features with primary focus on React-based frontend development.
+    \item Integrated frontend with REST APIs using Node.js and Express.
+\end{itemize}
+
+
+
+
+% Projects
+% Projects
+\section*{Projects}
+
+\textbf{Vexa -- AI Chat Application (Gen AI)} \hfill Nov 2025 -- Present \\
+Tech Stack: Next.js, Supabase, OpenAI API \\
+\href{https://vexa4ai.vercel.app/}{Live} \;|\; 
+\href{https://github.com/himanshu1081/vexa}{GitHub}
+\begin{itemize}
+    \item Built an AI-powered chat application with real-time responses.
+    \item Implemented infinite scrolling for chat history, optimizing message fetching and reducing redundant database reads.
+    \item Integrated Supabase for authentication and persistent chat storage.
+\end{itemize}
+
+\textbf{Vastora -- YouTube-like Video Streaming Platform} \hfill Jun 2025 -- Aug 2025 \\
+Tech Stack: MERN Stack (MongoDB, Express.js, React.js, Node.js), JWT \\
+\href{https://vastora.vercel.app/}{Live} \;|\; 
+\href{https://github.com/himanshu1081/vastora}{GitHub}
+\begin{itemize}
+    \item Developed a full-stack video streaming platform with authentication and protected routes using JWT.
+    \item Optimized data retrieval using MongoDB aggregation pipelines.
+\end{itemize}
+
+% Technical Skills
+\section*{Technical Skills}
+
+\textbf{Frontend:} React.js, Next.js, JavaScript, TypeScript, HTML5, CSS3, Tailwind CSS \\
+\textbf{Backend:} Node.js, Express.js, REST APIs \\
+\textbf{AI \& APIs:} OpenAI API, LLM Integration, Chatbot Architecture \\
+\textbf{Databases:} MongoDB, MySQL, PostgreSQL, Supabase \\
+\textbf{DevOps \& Tools:} Linux(Basics), Git, CI/CD Fundamentals, Vercel, AWS (Basics)
+
+% Education
+\section*{Education}
+
+\textbf{Bachelor of Computer Applications (BCA)} \hfill 2023 -- 2026 \\
+Jaypee Institute of Information Technology, Noida Sector 62, Uttar Pradesh
+
+\end{document}`
             },
             {
                 role: "user",
-                content: `JOB DESCRIPTION:
-${jobdescription}
+                content: `
+                JOB DESCRIPTION:${jobdescription}
+                LinkedIn Url :${linkedInUrl}
+                Github Url :${githubUrl}
 
 OLD RESUME:
 ${oldResume}`
@@ -116,6 +228,7 @@ const upload = multer({ storage })
 
 app.post('/getresume', upload.single("oldResume"), async (req, res) => {
     try {
+        console.log("hit server")
         const filepath = req.file.path;
 
         const buffer = fs.readFileSync(filepath);
@@ -128,7 +241,7 @@ app.post('/getresume', upload.single("oldResume"), async (req, res) => {
 
         //getting important points from the jd.
         const important_points = await importantPoints(req.body.jobdescription)
-        const latex = await getLatex(oldResume.text, important_points)
+        const latex = await getLatex(oldResume.text, important_points,req.body.linkedInUrl,req.body.githubUrl)
         console.log("latex code recevied from grok")
         fs.unlinkSync(filepath)
         const { id } = await getPDF(latex);
