@@ -1,5 +1,5 @@
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
   const generateBtn = document.getElementById("generateBtn");
   const pdfinput = document.getElementById("pdfinput");
@@ -9,47 +9,59 @@ document.addEventListener("DOMContentLoaded", () => {
   let warning = document.getElementById("warning")
   let linkedinUrl = document.getElementById("linkedinurl")
   let githubUrl = document.getElementById("githuburl")
-  let links = document.querySelectorAll("#linkedinurl", "#githuburl")
 
+  //will check if there is any old resume inside IndexedDB
+  let file = await getfile();
+  linkedinUrl.value = localStorage.getItem("linkedinUrl") || "";
+  githubUrl.value = localStorage.getItem("githubUrl") || "";
+
+  if (file) {
+    resumeText.innerText = "Resume loaded ✓ Upload new if needed"
+  }
+
+  //stores linkedIn url in localstorage when user paste it
   linkedinUrl.addEventListener("change", () => {
     localStorage.setItem("linkedinUrl", linkedinUrl.value)
   })
 
-
+  //stores github url in localstorage when user paste it
   githubUrl.addEventListener("change", () => {
     localStorage.setItem("githubUrl", githubUrl.value)
   })
 
+  //stores old resume inside IndexedDB 
+  pdfinput.addEventListener("change", (e) => {
+    file = e.target.files[0];
+    resumeText.innerText = "File Uploaded!"
+    savefile(file)
+  });
+
+
   pdfinputui.addEventListener("click", () => {
     pdfinput.click()
   })
-
-
-  let file = getfile() || null;
-  if (file) {
-    resumeText.innerHTML = "<div>Click here to upload new file</div>"
-  }
-
-  linkedinUrl.value = localStorage.getItem("linkedinUrl") || "";
-  githubUrl.value = localStorage.getItem("githubUrl") || "";
 
   generateBtn.addEventListener("click", () => {
     if (!jdinput.value || !file) {
       if (!warning) {
         warning = document.createElement("div")
         warning.style.color = "red"
-        if (!file) {
-          warning.innerText = "Upload old resume."
-          generateBtn.before(warning)
-        } else {
-          warning.innerText = "Provide job description."
-          generateBtn.before(warning)
-        }
-        return
+        generateBtn.before(warning)
       }
+
+      if (!file) {
+        warning.innerText = "Upload old resume."
+      } else {
+        warning.innerText = "Provide job description."
+      }
+      return
     }
     generateBtn.innerText = "Generating..."
-    getResume(jdinput, file);
+    if (warning) {
+      warning.remove();
+      warning = null;
+    }
+    getResume(jdinput, file, linkedinUrl, githubUrl, generateBtn);
   });
 
   chrome.runtime.sendMessage(
@@ -66,7 +78,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     request.onupgradeneeded = (event) => {
       const db = event.target.result
-      db.createObjectStore("files", { keyPath: "id" })
+      if (!db.objectStoreNames.contains("files")) {
+        db.createObjectStore("files", { keyPath: "id" });
+      }
     }
 
     request.onsuccess = (event) => {
@@ -81,42 +95,53 @@ document.addEventListener("DOMContentLoaded", () => {
         id: "oldresume",
         file: file
       })
+      tx.oncomplete = () => db.close();
     }
   }
 
   function getfile() {
-    const request = indexedDB.open("resumeDB", 1);
+    return new Promise((resolve, reject) => {
 
-    request.onsuccess = (event) => {
+      const request = indexedDB.open("resumeDB", 1);
 
-      const db = event.target.result;
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
 
-      const tx = db.transaction("files", "readonly");
-
-      const store = tx.objectStore("files");
-
-      const getRequest = store.get("oldresume");
-
-      getRequest.onsuccess = () => {
-        const data = getRequest.result;
-        let file = null
-        if (data) {
-          file = data.file;
+        if (!db.objectStoreNames.contains("files")) {
+          db.createObjectStore("files", { keyPath: "id" });
         }
-        return file;
-      }
-    }
-  }
+      };
 
-  pdfinput.addEventListener("change", (e) => {
-    file = e.target.files[0];
-    resumeText.innerText = "File Uploaded!"
-    savefile(file)
-  });
+      request.onsuccess = (event) => {
+
+        const db = event.target.result;
+        if (!db.objectStoreNames.contains("files")) {
+          resolve(null);   // table doesn't exist yet
+          return;
+        }
+        const tx = db.transaction("files", "readonly");
+
+        const store = tx.objectStore("files");
+
+        const getRequest = store.get("oldresume");
+
+        getRequest.onsuccess = () => {
+          const data = getRequest.result;
+          if (data) {
+            resolve(data.file);
+          } else {
+            resolve(null)
+          }
+          getRequest.onerror = () => reject(req.error);
+        }
+        request.onerror = () => reject(request.error);
+      }
+    })
+  }
 
 });
 
-async function getResume(jdinput, file) {
+async function getResume(jdinput, file, linkedinUrl, githubUrl, generateBtn) {
 
   if (!file) {
     console.log("No resume uploaded");
@@ -145,7 +170,10 @@ async function getResume(jdinput, file) {
     if (!response.ok) {
       const err = await response.text();
       generateBtn.innerText = "Generate resume"
-      warning.innerText = "Something went wrong."
+      const warning = document.createElement("div");
+      warning.style.color = "red";
+      warning.innerText = "Something went wrong.";
+      generateBtn.before(warning);
       console.error(err);
       return;
     }

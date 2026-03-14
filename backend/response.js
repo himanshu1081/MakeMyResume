@@ -27,9 +27,9 @@ async function getPDF(latex) {
 
 async function importantPoints(jobdescription) {
     const chatCompletion = await groq.chat.completions.create({
-        model: "groq/compound",
+        model: "openai/gpt-oss-120b",
         temperature: 0.2,
-        max_completion_tokens: 1200,
+        max_completion_tokens: 700,
         messages: [
             {
                 role: "system",
@@ -47,7 +47,7 @@ async function importantPoints(jobdescription) {
 
 async function getLatex(oldResume, jobdescription,linkedInUrl="",githubUrl="") {
     const chatCompletion = await groq.chat.completions.create({
-        model: "groq/compound",
+        model: "llama-3.3-70b-versatile",
         temperature: 0.2,
         max_completion_tokens: 1200,
         messages: [

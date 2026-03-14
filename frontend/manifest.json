@@ -25,5 +25,8 @@
   ],
   "host_permissions": [
     "https://makemyresume.onrender.com/*"
-  ]
+  ],
+  "icons": {
+    "128": "icons/logo.png"
+  }
 }
