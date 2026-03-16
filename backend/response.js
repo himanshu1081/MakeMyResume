@@ -146,7 +146,7 @@ app.post('/getresume', upload.single("oldResume"), async (req, res) => {
         fs.unlinkSync(filepath)
         const { id } = await getPDF(latex);
         console.log("sending file:", `temp/resume-${id}.pdf`)
-        res.download(`temp / resume - ${id}.pdf`, (err) => {
+        res.download(`temp/resume-${id}.pdf`, (err) => {
             if (err) {
                 console.error("Download error:", err)
                 return
