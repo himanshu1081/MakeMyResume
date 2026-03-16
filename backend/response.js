@@ -25,26 +25,6 @@ async function getPDF(latex) {
     return { id }
 }
 
-async function importantPoints(jobdescription) {
-    const chatCompletion = await groq.chat.completions.create({
-        model: "openai/gpt-oss-120b",
-        temperature: 0.2,
-        max_completion_tokens: 700,
-        messages: [
-            {
-                role: "system",
-                content: `You are given a jobdescription from linkedIn. You have to find revevant key points from the jd and return important parts from it which will later be given to an api for better resume building via latex code.`
-            },
-            {
-                role: "user",
-                content: `JOB DESCRIPTION: ${jobdescription}`
-            }
-        ]
-    });
-
-    return chatCompletion.choices[0].message.content;
-}
-
 
 async function getLatex(oldResume, jobdescription, linkedInUrl = "", githubUrl = "") {
     const chatCompletion = await groq.chat.completions.create({
@@ -54,53 +34,55 @@ async function getLatex(oldResume, jobdescription, linkedInUrl = "", githubUrl =
         messages: [
             {
                 role: "system",
-                content: `You are a professional technical resume writer and LaTeX formatter.
+                content: `
+             You are a professional technical resume editor.
 
-Extract facts ONLY from OLD RESUME.
-Escape all LaTeX special characters if present in the job description.
-Rewrite bullet points to align with job description keywords while preserving original meaning.
-Do NOT fabricate information.
-Tailor wording to match JOB DESCRIPTION keywords.
-links for the github and linkedin is given as well,if not provided then dont add it to the resume.
-Keep resume strictly one page.
-Output ONLY valid LaTeX.
-No markdown.
-No explanations.
-No comments.
-Use 10pt article class.
-Margin 0.5in.
-Use only: geometry, titlesec, enumitem, hyperref.
-No unusual spacing commands.
-Tight formatting.
-Structure:
-Header
-Experience
-Projects
-Technical Skills
-Education
+Your job is to rewrite resume content so it aligns with a given job description while keeping the information truthful.
+
+Rules:
+- Use facts ONLY from the OLD RESUME.
+- Do NOT fabricate experience, projects, or skills.
+- Improve wording to match keywords from the JOB DESCRIPTION.
+- Keep bullet points concise and impact-focused.
+- Do not repeat information.
+- Maintain a professional resume tone.
+- Keep the resume suitable for a single page.
+
 Return ONLY the following sections in plain text.
 
 HEADER:
-...
+Full name, role title, phone, email, LinkedIn, GitHub.
 
 EXPERIENCE:
-...
+Each job with company, role, dates, and bullet points.
 
 PROJECTS:
-...
+Project name, tech stack, and bullet points.
 
 SKILLS:
-...
+List of technical skills grouped by category.
 
 EDUCATION:
-...`
+Degree, institution, and years.
+
+Important:
+Do NOT output LaTeX.
+Do NOT include explanations.
+Do NOT include markdown.
+Only return the sections exactly as specified.
+`
             },
             {
                 role: "user",
                 content: `
-                JOB DESCRIPTION:${jobdescription}
-                LinkedIn Url :${linkedInUrl}
-                Github Url :${githubUrl}
+               JOB DESCRIPTION:
+${jobdescription}
+
+LINKEDIN:
+${linkedInUrl}
+
+GITHUB:
+${githubUrl}
 
 OLD RESUME:
 ${oldResume}`
@@ -149,9 +131,7 @@ app.post('/getresume', upload.single("oldResume"), async (req, res) => {
         console.log("old resume fetched")
         await parser.destroy();
 
-        //getting important points from the jd.
-        const important_points = await importantPoints(req.body.jobdescription)
-        const latex = await getLatex(oldResume.text, important_points, req.body.linkedInUrl, req.body.githubUrl)
+        const latex = await getLatex(oldResume.text, jobdescription, req.body.linkedInUrl, req.body.githubUrl)
         console.log("latex code recevied from grok")
         fs.unlinkSync(filepath)
         const { id } = await getPDF(latex);
