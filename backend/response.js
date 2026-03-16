@@ -54,9 +54,8 @@ function sanitizeLatex(latex) {
     if (!latex.includes("\\begin{document}")) {
         throw new Error("Invalid LaTeX: missing document start");
     }
-
     if (!latex.includes("\\end{document}")) {
-        throw new Error("Invalid LaTeX: missing document end");
+        latex += "\n\\end{document}";
     }
 
     return latex;
@@ -66,7 +65,7 @@ async function getLatex(oldResume, jobdescription, linkedInUrl = "", githubUrl =
     const chatCompletion = await groq.chat.completions.create({
         model: "llama-3.3-70b-versatile",
         temperature: 0.2,
-        max_completion_tokens: 1200,
+        max_completion_tokens: 3000,
         messages: [
             {
                 role: "system",
