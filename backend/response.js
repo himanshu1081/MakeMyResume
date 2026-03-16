@@ -107,7 +107,7 @@ OLD RESUME:
 const app = express()
 const port = process.env.PORT || 3000
 app.use(cors({
-    origin: ["chrome-extension://fagohgjmefkeimffbdneigebbjkbppcp",""]
+    origin: ["chrome-extension://fagohgjmefkeimffbdneigebbjkbppcp", ""]
 }
 ))
 app.use(express.urlencoded({ extended: false }))
@@ -145,14 +145,19 @@ app.post('/getresume', upload.single("oldResume"), async (req, res) => {
         console.log("latex code recevied from grok")
         fs.unlinkSync(filepath)
         const { id } = await getPDF(latex);
-
+        console.log("sending file:", `temp/resume-${id}.pdf`)
         res.download(`temp / resume - ${id}.pdf`, (err) => {
-            if (!err) {
-                fs.unlinkSync(`temp / resume - ${id}.pdf`);
-                fs.unlinkSync(`temp / resume - ${id}.tex`);
-                fs.unlinkSync(`temp / resume - ${id}.aux`);
-                fs.unlinkSync(`temp / resume - ${id}.log`);
+            if (err) {
+                console.error("Download error:", err)
+                return
             }
+
+            setTimeout(() => {
+                fs.unlinkSync(`temp/resume-${id}.pdf`)
+                fs.unlinkSync(`temp/resume-${id}.tex`)
+                fs.unlinkSync(`temp/resume-${id}.aux`)
+                fs.unlinkSync(`temp/resume-${id}.log`)
+            }, 5000)
         });
 
     } catch (error) {
