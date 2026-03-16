@@ -35,50 +35,67 @@ async function getLatex(oldResume, jobdescription, linkedInUrl = "", githubUrl =
             {
                 role: "system",
                 content: `
-             You are a professional technical resume editor.
+                You are a professional technical resume writer and LaTeX formatter.
 
 Your job is to rewrite resume content so it aligns with a given job description while keeping the information truthful.
 
-Rules:
+Extract facts ONLY from OLD RESUME.
+Do NOT fabricate information.
+Tailor wording to match JOB DESCRIPTION keywords.
+Keep resume strictly one page.
+Output ONLY valid LaTeX.
+No markdown.
+No explanations.
+No comments.
+Use 10pt article class.
+Margin 0.5in.
+Use only: geometry, titlesec, enumitem, hyperref.
+No unusual spacing commands.
+Tight formatting.
+Structure:
+
+            HEADER:
+        Full name, role title, phone, email, LinkedIn, GitHub.
+
+            EXPERIENCE:
+        Each job with company, role, dates, and bullet points.
+
+            PROJECTS:
+        Project name, tech stack, and bullet points.
+
+            SKILLS:
+        List of technical skills grouped by category.
+
+            EDUCATION:
+        Degree, institution, and years.
+
+Give only latex output.No commentry.
+
+
+    Rules:
 - Use facts ONLY from the OLD RESUME.
 - Do NOT fabricate experience, projects, or skills.
 - Improve wording to match keywords from the JOB DESCRIPTION.
-- Keep bullet points concise and impact-focused.
+- Keep bullet points concise and impact - focused.
 - Do not repeat information.
 - Maintain a professional resume tone.
 - Keep the resume suitable for a single page.
-
-HEADER:
-Full name, role title, phone, email, LinkedIn, GitHub.
-
-EXPERIENCE:
-Each job with company, role, dates, and bullet points.
-
-PROJECTS:
-Project name, tech stack, and bullet points.
-
-SKILLS:
-List of technical skills grouped by category.
-
-EDUCATION:
-Degree, institution, and years.
-Give only latex output. No commentry.
 `
             },
             {
                 role: "user",
                 content: `
                JOB DESCRIPTION:
-${jobdescription}
+            ${jobdescription}
 
 LINKEDIN:
-${linkedInUrl}
+        ${linkedInUrl}
 
 GITHUB:
-${githubUrl}
+        ${githubUrl}
 
 OLD RESUME:
-${oldResume}`
+        ${oldResume}`
             }
         ]
     });
@@ -129,12 +146,12 @@ app.post('/getresume', upload.single("oldResume"), async (req, res) => {
         fs.unlinkSync(filepath)
         const { id } = await getPDF(latex);
 
-        res.download(`temp/resume-${id}.pdf`, (err) => {
+        res.download(`temp / resume - ${id}.pdf`, (err) => {
             if (!err) {
-                fs.unlinkSync(`temp/resume-${id}.pdf`);
-                fs.unlinkSync(`temp/resume-${id}.tex`);
-                fs.unlinkSync(`temp/resume-${id}.aux`);
-                fs.unlinkSync(`temp/resume-${id}.log`);
+                fs.unlinkSync(`temp / resume - ${id}.pdf`);
+                fs.unlinkSync(`temp / resume - ${id}.tex`);
+                fs.unlinkSync(`temp / resume - ${id}.aux`);
+                fs.unlinkSync(`temp / resume - ${id}.log`);
             }
         });
 
