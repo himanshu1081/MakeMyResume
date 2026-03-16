@@ -30,7 +30,7 @@ async function getLatex(oldResume, jobdescription, linkedInUrl = "", githubUrl =
     const chatCompletion = await groq.chat.completions.create({
         model: "llama-3.3-70b-versatile",
         temperature: 0.2,
-        max_completion_tokens: 3000,
+        max_completion_tokens: 1200,
         messages: [
             {
                 role: "system",
@@ -48,8 +48,6 @@ Rules:
 - Maintain a professional resume tone.
 - Keep the resume suitable for a single page.
 
-Return ONLY the following sections in plain text.
-
 HEADER:
 Full name, role title, phone, email, LinkedIn, GitHub.
 
@@ -64,12 +62,6 @@ List of technical skills grouped by category.
 
 EDUCATION:
 Degree, institution, and years.
-
-Important:
-Do NOT output LaTeX.
-Do NOT include explanations.
-Do NOT include markdown.
-Only return the sections exactly as specified.
 `
             },
             {
