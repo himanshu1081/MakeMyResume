@@ -62,6 +62,7 @@ List of technical skills grouped by category.
 
 EDUCATION:
 Degree, institution, and years.
+Give only latex output. No commentry.
 `
             },
             {
