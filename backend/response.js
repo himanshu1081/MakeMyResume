@@ -107,7 +107,7 @@ OLD RESUME:
 const app = express()
 const port = process.env.PORT || 3000
 app.use(cors({
-    origin: ["chrome-extension://fagohgjmefkeimffbdneigebbjkbppcp"]
+    origin: ["chrome-extension://fagohgjmefkeimffbdneigebbjkbppcp",""]
 }
 ))
 app.use(express.urlencoded({ extended: false }))
