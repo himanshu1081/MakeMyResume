@@ -107,6 +107,7 @@ DO NOT modify:
 - section layout
 
 ONLY replace the following placeholders:
+Links like this : \\href{https://www.linkedin.com/in/himanshu1081/}{LinkedIn} (this is just an example)
 
 NAME  
 ROLE  
