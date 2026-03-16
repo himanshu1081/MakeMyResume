@@ -44,8 +44,25 @@ async function importantPoints(jobdescription) {
 
     return chatCompletion.choices[0].message.content;
 }
+function sanitizeLatex(latex) {
 
-async function getLatex(oldResume, jobdescription,linkedInUrl="",githubUrl="") {
+    // fix common LLM mistakes
+    latex = latex.replace(/\\titleformat{section}/g, "\\titleformat{\\\\section}");
+    latex = latex.replace(/\\titlespacing{section}/g, "\\titlespacing{\\\\section}");
+
+    // ensure document exists
+    if (!latex.includes("\\begin{document}")) {
+        throw new Error("Invalid LaTeX: missing document start");
+    }
+
+    if (!latex.includes("\\end{document}")) {
+        throw new Error("Invalid LaTeX: missing document end");
+    }
+
+    return latex;
+}
+
+async function getLatex(oldResume, jobdescription, linkedInUrl = "", githubUrl = "") {
     const chatCompletion = await groq.chat.completions.create({
         model: "llama-3.3-70b-versatile",
         temperature: 0.2,
@@ -199,7 +216,7 @@ ${oldResume}`
     });
 
     const latexCode = chatCompletion.choices[0].message.content;
-    return latexCode;
+    return sanitizeLatex(latexCode);
 }
 
 const app = express()
@@ -241,7 +258,7 @@ app.post('/getresume', upload.single("oldResume"), async (req, res) => {
 
         //getting important points from the jd.
         const important_points = await importantPoints(req.body.jobdescription)
-        const latex = await getLatex(oldResume.text, important_points,req.body.linkedInUrl,req.body.githubUrl)
+        const latex = await getLatex(oldResume.text, important_points, req.body.linkedInUrl, req.body.githubUrl)
         console.log("latex code recevied from grok")
         fs.unlinkSync(filepath)
         const { id } = await getPDF(latex);
