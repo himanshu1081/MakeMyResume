@@ -27,81 +27,127 @@ async function getPDF(latex) {
 
 
 async function getLatex(oldResume, jobdescription, linkedInUrl = "", githubUrl = "") {
+
+    oldResume = oldResume.slice(0, 8000)
+    jobdescription = jobdescription.slice(0, 4000)
+
+    const latexTemplate = `
+\\documentclass[10pt,letterpaper]{article}
+\\usepackage[utf8]{inputenc}
+\\usepackage[margin=0.5in]{geometry}
+\\usepackage{titlesec}
+\\usepackage{enumitem}
+\\usepackage[hidelinks]{hyperref}
+
+\\titleformat{\\section}{\\large\\bfseries}{}{0pt}{}[\\titlerule]
+\\titlespacing{\\section}{0pt}{12pt}{6pt}
+\\setlist[itemize]{itemsep=3pt, topsep=4pt, leftmargin=*}
+\\setlength{\\parindent}{0pt}
+\\setlength{\\parskip}{4pt}
+\\pagestyle{empty}
+
+\\begin{document}
+
+\\begin{center}
+{\\huge \\textbf{NAME}} \\\\
+ROLE \\\\
+PHONE | EMAIL | LINKEDIN | GITHUB
+\\end{center}
+
+\\section*{Experience}
+EXPERIENCE
+
+\\section*{Projects}
+PROJECTS
+
+\\section*{Technical Skills}
+SKILLS
+
+\\section*{Education}
+EDUCATION
+
+\\end{document}
+`;
+
     const chatCompletion = await groq.chat.completions.create({
         model: "llama-3.3-70b-versatile",
-        temperature: 0.2,
+        temperature: 0.15,
         max_completion_tokens: 1200,
         messages: [
             {
                 role: "system",
                 content: `
-                You are a professional technical resume writer and LaTeX formatter.
+You are a professional technical resume writer and LaTeX formatter.
 
-Your job is to rewrite resume content so it aligns with a given job description while keeping the information truthful.
+Your task is to tailor a resume to match a job description.
 
-Extract facts ONLY from OLD RESUME.
-Do NOT fabricate information.
-Tailor wording to match JOB DESCRIPTION keywords.
-Keep resume strictly one page.
-Output ONLY valid LaTeX.
-No markdown.
-No explanations.
-No comments.
-Use 10pt article class.
-Margin 0.5in.
-Use only: geometry, titlesec, enumitem, hyperref.
-No unusual spacing commands.
-Tight formatting.
-Structure:
+STRICT RULES:
 
-            HEADER:
-        Full name, role title, phone, email, LinkedIn, GitHub.
+- Extract facts ONLY from OLD RESUME.
+- NEVER fabricate companies, projects, roles, or skills.
+- Rewrite wording to better match JOB DESCRIPTION keywords.
+- Keep resume concise and one-page friendly.
+- Bullet points must be short and impact-focused.
 
-            EXPERIENCE:
-        Each job with company, role, dates, and bullet points.
+LATEX RULES:
 
-            PROJECTS:
-        Project name, tech stack, and bullet points.
+- Output ONLY valid LaTeX.
+- No markdown.
+- No explanations.
+- No comments.
 
-            SKILLS:
-        List of technical skills grouped by category.
+CRITICAL INSTRUCTION:
 
-            EDUCATION:
-        Degree, institution, and years.
+You MUST reuse the EXACT LaTeX template provided.
 
-Give only latex output.No commentry.
+DO NOT modify:
+- documentclass
+- packages
+- formatting
+- section layout
 
+ONLY replace the following placeholders:
 
-    Rules:
-- Use facts ONLY from the OLD RESUME.
-- Do NOT fabricate experience, projects, or skills.
-- Improve wording to match keywords from the JOB DESCRIPTION.
-- Keep bullet points concise and impact - focused.
-- Do not repeat information.
-- Maintain a professional resume tone.
-- Keep the resume suitable for a single page.
+NAME  
+ROLE  
+PHONE  
+EMAIL  
+LINKEDIN  
+GITHUB  
+EXPERIENCE  
+PROJECTS  
+SKILLS  
+EDUCATION
+
+Each experience should contain 3–4 bullet points.
+Each project should contain 2–3 bullet points.
+
+Return the COMPLETE LaTeX document.
+
+TEMPLATE:
+${latexTemplate}
 `
             },
             {
                 role: "user",
                 content: `
-               JOB DESCRIPTION:
-            ${jobdescription}
+JOB DESCRIPTION:
+${jobdescription}
 
 LINKEDIN:
-        ${linkedInUrl}
+${linkedInUrl}
 
 GITHUB:
-        ${githubUrl}
+${githubUrl}
 
 OLD RESUME:
-        ${oldResume}`
+${oldResume}
+`
             }
         ]
     });
 
-    const latexCode = chatCompletion.choices[0].message.content;
-    return latexCode
+    return chatCompletion.choices[0].message.content;
 }
 
 const app = express()
