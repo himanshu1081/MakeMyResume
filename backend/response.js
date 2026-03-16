@@ -44,22 +44,7 @@ async function importantPoints(jobdescription) {
 
     return chatCompletion.choices[0].message.content;
 }
-function sanitizeLatex(latex) {
 
-    // fix common LLM mistakes
-    latex = latex.replace(/\\titleformat{section}/g, "\\titleformat{\\\\section}");
-    latex = latex.replace(/\\titlespacing{section}/g, "\\titlespacing{\\\\section}");
-
-    // ensure document exists
-    if (!latex.includes("\\begin{document}")) {
-        throw new Error("Invalid LaTeX: missing document start");
-    }
-    if (!latex.includes("\\end{document}")) {
-        latex += "\n\\end{document}";
-    }
-
-    return latex;
-}
 
 async function getLatex(oldResume, jobdescription, linkedInUrl = "", githubUrl = "") {
     const chatCompletion = await groq.chat.completions.create({
@@ -93,113 +78,22 @@ Experience
 Projects
 Technical Skills
 Education
-Use the format for the resume given below.
-Format:
-\\documentclass[10pt, letterpaper]{article}
-\\usepackage[utf8]{inputenc}
-\\usepackage[margin=0.5in]{geometry}
-\\usepackage{titlesec}
-\\usepackage{enumitem}
-\\usepackage[hidelinks]{hyperref}
-\\usepackage{xcolor}
+Return ONLY the following sections in plain text.
 
-% Formatting
-\titleformat{\section}{\large\bfseries}{}{0pt}{}[\titlerule]
-\titlespacing{\section}{0pt}{12pt}{6pt}
-\setlist[itemize]{itemsep=3pt, topsep=4pt, leftmargin=*}
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{4pt}
-\pagestyle{empty}
-\\usepackage{hyperref}
+HEADER:
+...
 
-\hypersetup{
-    colorlinks=true,
-    urlcolor=blue,
-    linkcolor=blue
-}
-\begin{document}
+EXPERIENCE:
+...
 
-% Header
-\begin{center}
-    {\huge \textbf{Himanshu Chaudhary}} \\
-    \vspace{6pt}
-    Full Stack Developer \\
-    \vspace{6pt}
-   \href{tel:+916398776703}{+91 6398776703} \textbar\ 
-\href{mailto:himanshuatwork02@gmail.com}{himanshuatwork02@gmail.com} \textbar\ 
-\href{https://www.linkedin.com/in/himanshu1081/}{LinkedIn} \textbar\ 
-\href{https://github.com/himanshu1081}{GitHub}
-\end{center}
+PROJECTS:
+...
 
-% Experience
-\section*{Experience}
+SKILLS:
+...
 
-\textbf{Junior Full Stack Developer (AI Implementation)} \hfill Aug 2025 -- Present \\
-Mindmesh Consulting Ltd (UK-based Agency)
-\begin{itemize}
-    \item Assisted in implementing AI-powered chatbot solutions for client websites under senior developer guidance.
-    \item Integrated LLM APIs into existing web applications to enable automated customer query handling.
-    \item Developed backend routes and frontend UI components for chatbot interaction workflows.
-    \item Tested, debugged, and deployed chatbot features across multiple client projects.
-\end{itemize}
-
-\textbf{Freelance Frontend Developer} \hfill Feb 2026 -- Present \\
-Balkan Cleaning - \href{https://www.balkancleaning.co.uk/}{Live}
-\begin{itemize}
-    \item Developed and deployed a production business website for a UK-based client.
-    \item Built responsive UI using Vite + React and handled full deployment lifecycle.
-\end{itemize}
-
-
-\textbf{Full Stack Developer Intern (Frontend-Focused)} \hfill Jun 2025 -- Jul 2025 \\
-Innovation House Technology Private Limited
-\begin{itemize}
-    \item Built MERN stack features with primary focus on React-based frontend development.
-    \item Integrated frontend with REST APIs using Node.js and Express.
-\end{itemize}
-
-
-
-
-% Projects
-% Projects
-\section*{Projects}
-
-\textbf{Vexa -- AI Chat Application (Gen AI)} \hfill Nov 2025 -- Present \\
-Tech Stack: Next.js, Supabase, OpenAI API \\
-\href{https://vexa4ai.vercel.app/}{Live} \;|\; 
-\href{https://github.com/himanshu1081/vexa}{GitHub}
-\begin{itemize}
-    \item Built an AI-powered chat application with real-time responses.
-    \item Implemented infinite scrolling for chat history, optimizing message fetching and reducing redundant database reads.
-    \item Integrated Supabase for authentication and persistent chat storage.
-\end{itemize}
-
-\textbf{Vastora -- YouTube-like Video Streaming Platform} \hfill Jun 2025 -- Aug 2025 \\
-Tech Stack: MERN Stack (MongoDB, Express.js, React.js, Node.js), JWT \\
-\href{https://vastora.vercel.app/}{Live} \;|\; 
-\href{https://github.com/himanshu1081/vastora}{GitHub}
-\begin{itemize}
-    \item Developed a full-stack video streaming platform with authentication and protected routes using JWT.
-    \item Optimized data retrieval using MongoDB aggregation pipelines.
-\end{itemize}
-
-% Technical Skills
-\section*{Technical Skills}
-
-\textbf{Frontend:} React.js, Next.js, JavaScript, TypeScript, HTML5, CSS3, Tailwind CSS \\
-\textbf{Backend:} Node.js, Express.js, REST APIs \\
-\textbf{AI \& APIs:} OpenAI API, LLM Integration, Chatbot Architecture \\
-\textbf{Databases:} MongoDB, MySQL, PostgreSQL, Supabase \\
-\textbf{DevOps \& Tools:} Linux(Basics), Git, CI/CD Fundamentals, Vercel, AWS (Basics)
-
-% Education
-\section*{Education}
-
-\textbf{Bachelor of Computer Applications (BCA)} \hfill 2023 -- 2026 \\
-Jaypee Institute of Information Technology, Noida Sector 62, Uttar Pradesh
-
-\end{document}`
+EDUCATION:
+...`
             },
             {
                 role: "user",
@@ -215,7 +109,7 @@ ${oldResume}`
     });
 
     const latexCode = chatCompletion.choices[0].message.content;
-    return sanitizeLatex(latexCode);
+    return latexCode
 }
 
 const app = express()
