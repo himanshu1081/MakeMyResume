@@ -131,7 +131,7 @@ app.post('/getresume', upload.single("oldResume"), async (req, res) => {
         console.log("old resume fetched")
         await parser.destroy();
 
-        const latex = await getLatex(oldResume.text, jobdescription, req.body.linkedInUrl, req.body.githubUrl)
+        const latex = await getLatex(oldResume.text, req.body.jobdescription, req.body.linkedInUrl, req.body.githubUrl)
         console.log("latex code recevied from grok")
         fs.unlinkSync(filepath)
         const { id } = await getPDF(latex);
